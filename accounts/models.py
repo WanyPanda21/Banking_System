@@ -2,6 +2,7 @@ from django.db import models                                        # Imports Dj
 from django.conf import settings                                    #This imports your Django settings.
 import random                                                       #Python's built-in random library. We'll use it to generate a random account number.
  #making a change 
+ #making change coomit
 
 class Account(models.Model):                                        #We use models.Model to create database tables called Account.
 
