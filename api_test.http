@@ -1,0 +1,42 @@
+### Register User
+
+POST http://127.0.0.1:8000/api/register/
+Content-Type: application/json
+
+{
+    "username":"sai",
+    "password":"sai123",
+    "email":"sai@gmail.com",
+    "phone_number":"9999999999",
+    "role":"CUSTOMER",
+    "address":"Bhubaneswar",
+    "date_of_birth":"2000-01-01"
+}
+
+
+### Login
+
+POST http://127.0.0.1:8000/api/login/
+Content-Type: application/json
+
+{
+    "username":"sai",
+    "password":"sai123"
+}
+
+
+### Create Account
+
+POST http://127.0.0.1:8000/api/accounts/create/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg1ODk1NjM1LCJpYXQiOjE3ODU4OTUzMzUsImp0aSI6IjdjNzhhMjA4MzU3YjQ1YmY4MmU2NDM2MDMzMTY0OTFjIiwidXNlcl9pZCI6IjYifQ.ZYFNkUZZbgEFx1aEhOvft9rL-nqGETrl2DsK64-PhmA
+
+{
+    "account_type":"SAVINGS"
+}
+
+
+### View My Account
+
+GET http://127.0.0.1:8000/api/accounts/me/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg1OTA1ODI4LCJpYXQiOjE3ODU5MDU1MjgsImp0aSI6IjVhY2Y4ZmEzNmE0ZjQzYmVhOGFjYjM1MGViM2MyOTgwIiwidXNlcl9pZCI6IjYifQ.M0mOCjL0ZYtkoq06hxNQJlb0IR6qgXfvFdL1hmuHNaM
