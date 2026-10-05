@@ -148,3 +148,19 @@ class WithdrawMoneyView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+class AccountBalanceView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        account = Account.objects.get(user=request.user)
+
+        return Response(
+            {
+                "account_number": account.account_number,
+                "balance": account.balance
+            },
+            status=status.HTTP_200_OK
+        )
