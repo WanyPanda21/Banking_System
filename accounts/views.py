@@ -9,12 +9,17 @@ from .serializers import DepositSerializer
 from .serializers import WithdrawSerializer
 from transactions.models import Transaction
 
-
+#making changes xyz
+#making another changes
 class CreateAccount(APIView):
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """
+        Create a new account for the logged-in user.
+        
+        """
 
         # Check if the user already has an account
         if Account.objects.filter(user=request.user).exists():
