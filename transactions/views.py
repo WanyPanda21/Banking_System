@@ -32,62 +32,64 @@ class TransferMoneyView(APIView):
 
         amount = serializer.validated_data["amount"]
 
-        # 2. Get sender's account
-        try:
-            sender = Account.objects.get(user=request.user)
+        # 2. Start database transaction
+        with transaction.atomic():  # ⭐ EXISTING - KEEP THIS
 
-        except Account.DoesNotExist:
-            return Response(
-                {
-                    "error": "Sender account not found"
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
+            # 3. Get sender's account
+            try:
+                sender = Account.objects.select_for_update().get(  # ⭐ NEW
+                    user=request.user
+                )
 
-        # 3. Check sender is not transferring to himself
-        if sender.account_number == receiver_account_number:
-            return Response(
-                {
-                    "error": "You cannot transfer money to your own account"
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            except Account.DoesNotExist:
+                return Response(
+                    {
+                        "error": "Sender account not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
-        # 4. Get receiver account
-        try:
-            receiver = Account.objects.get(
-                account_number=receiver_account_number
-            )
+            # 4. Check sender is not transferring to himself
+            if sender.account_number == receiver_account_number:
+                return Response(
+                    {
+                        "error": "You cannot transfer money to your own account"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        except Account.DoesNotExist:
-            return Response(
-                {
-                    "error": "Receiver account not found"
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
+            # 5. Get receiver account
+            try:
+                receiver = Account.objects.select_for_update().get(  # ⭐ NEW
+                    account_number=receiver_account_number
+                )
 
-        # 5. Check sufficient balance
-        if amount > sender.balance:
-            return Response(
-                {
-                    "error": "Insufficient balance"
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            except Account.DoesNotExist:
+                return Response(
+                    {
+                        "error": "Receiver account not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
-        # 6. Update both accounts safely
-        with transaction.atomic():
+            # 6. Check sufficient balance
+            if amount > sender.balance:
+                return Response(
+                    {
+                        "error": "Insufficient balance"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            # Deduct from sender
+            # 7. Deduct from sender
             sender.balance -= amount
             sender.save()
 
-            # Add to receiver
+            # 8. Add to receiver
             receiver.balance += amount
             receiver.save()
 
-            # Create transaction record
+            # 9. Create transaction record
             transfer_transaction = Transaction.objects.create(
                 account=sender,
                 receiver_account=receiver,
@@ -97,7 +99,7 @@ class TransferMoneyView(APIView):
                 status="SUCCESS"
             )
 
-        # 7. Response
+        # 10. Response
         return Response(
             {
                 "message": "Money transferred successfully",
